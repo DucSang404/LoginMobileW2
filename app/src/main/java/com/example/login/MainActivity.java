@@ -4,22 +4,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
+import com.example.login.api.AcountAPI;
+import com.example.login.api.RetrofitClient;
+import com.example.login.dto.AccountDTO;
 
-import org.json.JSONArray;
-import org.json.JSONException;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,35 +24,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        String url = "http://10.0.2.2:8080/login";
-
-        com.android.volley.RequestQueue queue = Volley.newRequestQueue(this);
-
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        try {
-                            // Loop through the response and log the user information
-                            for (int i = 0; i < response.length(); i++) {
-                                String name = response.getJSONObject(i).getString("username");
-                                String email = response.getJSONObject(i).getString("password");
-                                Log.d("User", "Name: " + name + ", Email: " + email);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("Volley", "Error: " + error.getMessage());
-            }
-        });
-
-        // Add the request to the queue
-        queue.add(jsonArrayRequest);
 
         TextView tvRegisterHere = findViewById(R.id.tvRegisterHere);
         TextView tvForgetPassword = findViewById(R.id.tvForgetPassword);
@@ -76,5 +44,49 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void login (AccountDTO accountDTO) {
+        AcountAPI api = RetrofitClient.getRetrofitInstance().create(AcountAPI.class);
+        Call<AccountDTO> call = api.login(accountDTO);
+
+        // Thực hiện gọi API
+        call.enqueue(new Callback<AccountDTO>() {
+            @Override
+            public void onResponse(Call<AccountDTO> call, Response<AccountDTO> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    AccountDTO loggedInAccount = response.body();
+                    Toast.makeText(MainActivity.this, "Đăng nhập thành công với username: " + loggedInAccount.getUsername(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AccountDTO> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Lỗi đăng nhập: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void btnLoginClick(View view) {
+        EditText etUsername = findViewById(R.id.etUsername);
+        EditText etPassword = findViewById(R.id.etPassword);
+
+        String username = etUsername.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+
+        // Check input
+        if (username.isEmpty()) {
+            etUsername.setError("Please enter your email.");
+            return;
+        }
+
+        if (password.isEmpty()) {
+            etPassword.setError("Please enter your password.");
+            return;
+        }
+
+        login(new AccountDTO(username, password));
     }
 }
