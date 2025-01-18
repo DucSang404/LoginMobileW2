@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,10 +19,12 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,32 +35,56 @@ public class MainActivity extends AppCompatActivity {
 
         String url = "http://10.0.2.2:8080/login";
 
-        com.android.volley.RequestQueue queue = Volley.newRequestQueue(this);
+        Button btnLogin = findViewById(R.id.btnLogin);
+        EditText edtUsername = findViewById(R.id.etUsername);
+        EditText edtPassword = findViewById(R.id.etPassword);
 
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        try {
-                            // Loop through the response and log the user information
-                            for (int i = 0; i < response.length(); i++) {
-                                String name = response.getJSONObject(i).getString("username");
-                                String email = response.getJSONObject(i).getString("password");
-                                Log.d("User", "Name: " + name + ", Email: " + email);
+        btnLogin.setOnClickListener(view -> {
+            String username = edtUsername.getText().toString().trim();
+            String password = edtPassword.getText().toString().trim();
+
+            if (username.isEmpty() || password.isEmpty()) {
+                Toast.makeText(getApplicationContext(), "Username và Password không được để trống", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+                JSONObject loginRequest = new JSONObject();
+                loginRequest.put("username", username);
+                loginRequest.put("password", password);
+
+                Log.d("LoginRequest", "Sending login request: " + loginRequest.toString());
+
+                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, loginRequest,
+                        response -> {
+                            try {
+                                boolean loginSuccess = response.getBoolean("body");
+                                Log.d("LoginResponse", "Login success: " + loginSuccess);
+
+                                if (loginSuccess) {
+                                    Intent intent = new Intent(MainActivity.this, LoginSuccess.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Invalid username or password!", Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("Volley", "Error: " + error.getMessage());
+                        },
+                        error -> {
+                            // Log chi tiết lỗi HTTP
+                            Log.e("LoginError", "Error occurred: " + error.toString());
+                            if (error.networkResponse != null) {
+                                Log.e("LoginError", "HTTP Status Code: " + error.networkResponse.statusCode);
+                            }
+                            Toast.makeText(getApplicationContext(), "Error occurred during login!", Toast.LENGTH_SHORT).show();
+                        });
+                Volley.newRequestQueue(this).add(request);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         });
-
-        // Add the request to the queue
-        queue.add(jsonArrayRequest);
 
         TextView tvRegisterHere = findViewById(R.id.tvRegisterHere);
         TextView tvForgetPassword = findViewById(R.id.tvForgetPassword);

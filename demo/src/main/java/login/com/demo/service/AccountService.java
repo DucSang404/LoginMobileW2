@@ -29,4 +29,13 @@ public class AccountService {
         }
         return dtos;
     }
+
+    public boolean findAccount(String username, String password) {
+        AccountEntity entity = accountRepository.findOneByUsernameAndPassword(username, password);
+        if (entity != null) {
+            return true;
+        }
+
+        return false;
+    }
 }

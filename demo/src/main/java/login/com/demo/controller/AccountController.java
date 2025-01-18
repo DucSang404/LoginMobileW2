@@ -5,9 +5,8 @@ import login.com.demo.service.AccountService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,11 +17,13 @@ import java.util.List;
 public class AccountController {
     AccountService accountService;
 
-    @GetMapping
-    public List<AccountDTO> getAccount() {
-        for(AccountDTO dto : accountService.findAll()) {
-            System.out.println(dto.getUsername());
-        }
-        return accountService.findAll();
+    @PostMapping
+    public ResponseEntity<Boolean> checkLogin(@RequestBody AccountDTO accountDTO) {
+        String username = accountDTO.getUsername();
+        String password = accountDTO.getPassword();
+
+        boolean validLogin = accountService.findAccount(username, password);
+        var t = ResponseEntity.ok(validLogin);
+        return t;
     }
 }
