@@ -2,7 +2,6 @@ package com.example.login;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -10,7 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.login.api.AcountAPI;
+import com.example.login.api.AccountAPI;
 import com.example.login.api.RetrofitClient;
 import com.example.login.dto.AccountDTO;
 
@@ -47,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void login (AccountDTO accountDTO) {
-        AcountAPI api = RetrofitClient.getRetrofitInstance().create(AcountAPI.class);
+        AccountAPI api = RetrofitClient.getRetrofitInstance().create(AccountAPI.class);
         Call<AccountDTO> call = api.login(accountDTO);
 
         // Thực hiện gọi API
@@ -56,7 +55,10 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<AccountDTO> call, Response<AccountDTO> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     AccountDTO loggedInAccount = response.body();
-                    Toast.makeText(MainActivity.this, "Đăng nhập thành công với username: " + loggedInAccount.getUsername(), Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, LoginSuccess.class);
+                    intent.putExtra("username", loggedInAccount.getUsername());
+                    startActivity(intent);
+//                    Toast.makeText(MainActivity.this, "Đăng nhập thành công với username: " + loggedInAccount.getUsername(), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(MainActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
                 }

@@ -15,14 +15,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.AccountNotFoundException;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
-@RequestMapping("/acount")
+@RequestMapping("/account")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountController {
     AccountService accountService;
+    Map<String, String> otpStorage = new ConcurrentHashMap<>();
+    MailUtils mailUtils;
 
     @PostMapping(("/login"))
     public ResponseEntity<AccountDTO> Login(@RequestBody AccountDTO accountDTO) throws AccountNotFoundException {
@@ -39,11 +42,11 @@ public class AccountController {
 
     @PostMapping(("/register"))
     public ResponseEntity<MessageDTO> register (@RequestBody String email, HttpServletRequest request) throws Exception {
-        if (email.isEmpty() || email == null)
+        if (email.isEmpty())
             return ResponseEntity.badRequest().body(null); // Trả về mã 400 nếu dữ liệu không hợp lệ
 
         // đưa otp vào session
-        OTP codeOTP = new OTP(6);
+        OTP codeOTP = new OTP();
         request.getSession().setAttribute(OTPConstant.OTP, codeOTP);
 
 
@@ -63,8 +66,36 @@ public class AccountController {
         OTP codeOTP = (OTP) request.getSession().getAttribute(OTPConstant.OTP);
 
         if (code.equals(codeOTP.getOtp())) {
-            return ResponseEntity.ok(new MessageDTO("Tạo tài khoản thành công !","success",true));
+            return ResponseEntity.ok(new MessageDTO("Tạo tài khoản thành công !",true, "success"));
         } else
-            return ResponseEntity.ok(new MessageDTO("OTP không đúng!","failure",false));
+            return ResponseEntity.ok(new MessageDTO("OTP không đúng!",false, "failure"));
+    }
+
+    @PostMapping("/send-otp")
+    public ResponseEntity<String> sendOTP(@RequestParam String email, HttpServletRequest request) {
+        OTP otp = new OTP();
+        otpStorage.put(email, otp.getOtp());
+
+        String subject = "Your OTP";
+        String body = "Hi,\n\nYour OTP is: " + otp.getOtp() + "\nPlease use this code to authenticate.";
+
+        boolean isSent = mailUtils.sendEmail("phama9162@gmail.com", email, subject, body);
+        if (isSent) {
+            return ResponseEntity.ok("OTP has send to " + email);
+        } else {
+            return ResponseEntity.status(500).body("Could not send OTP. Pls try again");
+        }
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<String> verifyOTP(@RequestParam String otp,
+                                            @RequestParam String email) {
+        if (otpStorage.containsKey(email) && otpStorage.get(email).equals(otp)) {
+            otpStorage.remove(email);
+            return ResponseEntity.ok("Verify success");
+        }
+        else {
+            return ResponseEntity.status(400).body("Invalid OTP or OTP expired");
+        }
     }
 }

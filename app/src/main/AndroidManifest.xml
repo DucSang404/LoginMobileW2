@@ -29,6 +29,9 @@
         <!-- Khai báo các activity -->
         <activity android:name=".Register" />
         <activity android:name=".ForgetPassword" />
+        <activity android:name=".LoginSuccess" />
+        <activity android:name=".EnterOTP" />
+
     </application>
 
 </manifest>

@@ -7,9 +7,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.login.api.AcountAPI;
+import com.example.login.api.AccountAPI;
 import com.example.login.api.RetrofitClient;
-import com.example.login.dto.AccountDTO;
 import com.example.login.dto.MessageDTO;
 
 import retrofit2.Call;
@@ -24,7 +23,7 @@ public class Register extends AppCompatActivity {
     }
 
     private void register(String email) {
-        AcountAPI api = RetrofitClient.getRetrofitInstance().create(AcountAPI.class);
+        AccountAPI api = RetrofitClient.getRetrofitInstance().create(AccountAPI.class);
         Call<MessageDTO> call = api.register(email);
 
         // Thực hiện gọi API
@@ -48,7 +47,7 @@ public class Register extends AppCompatActivity {
     }
 
     private void confirmOtp (String otp) {
-        AcountAPI api = RetrofitClient.getRetrofitInstance().create(AcountAPI.class);
+        AccountAPI api = RetrofitClient.getRetrofitInstance().create(AccountAPI.class);
         Call<MessageDTO> call = api.confirmOTP(otp);
 
         // Thực hiện gọi API
