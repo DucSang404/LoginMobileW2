@@ -24,12 +24,14 @@ import java.util.List;
 public class AccountController {
     AccountService accountService;
 
-    @GetMapping
-    public List<AccountDTO> getAccount() {
-        for(AccountDTO dto : accountService.findAll()) {
-            System.out.println(dto.getUsername());
-        }
-        return accountService.findAll();
+    @PostMapping
+    public ResponseEntity<Boolean> checkLogin(@RequestBody AccountDTO accountDTO) {
+        String username = accountDTO.getUsername();
+        String password = accountDTO.getPassword();
+
+        boolean validLogin = accountService.findAccount(username, password);
+        var t = ResponseEntity.ok(validLogin);
+        return t;
     }
 
     @PostMapping(("/login"))
