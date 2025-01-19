@@ -1,6 +1,8 @@
 package com.example.login.dto;
 
-public class AccountDTO {
+import java.io.Serializable;
+
+public class AccountDTO implements Serializable {
 
     private Long id;
     public String getUsername() {

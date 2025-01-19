@@ -3,6 +3,7 @@ package login.com.demo.service;
 import login.com.demo.converter.AccountConverter;
 import login.com.demo.converter.IAccountConverter;
 import login.com.demo.dto.AccountDTO;
+import login.com.demo.dto.MessageDTO;
 import login.com.demo.entity.AccountEntity;
 import login.com.demo.repository.AccountRepository;
 import lombok.AccessLevel;
@@ -36,4 +37,29 @@ public class AccountService {
         AccountEntity account = accountRepository.findByUsernameAndPassword(username, password);
         return (account != null) ? accountConverter.toDTO(account) : null;
     }
+
+    public boolean existsByUsername(String username) {
+        return accountRepository.existsByUsername(username);
+    }
+
+    public MessageDTO register(AccountDTO accountDTO) {
+        AccountEntity accountEntity = accountConverter.toEntity(accountDTO);
+
+        if (accountEntity == null) {
+            return new MessageDTO("Dữ liệu tài khoản không hợp lệ!", false, "fail");
+        }
+
+        if (accountRepository.existsByUsername(accountDTO.getUsername())) {
+            return new MessageDTO("Email đã tồn tại!", false, "fail");
+        }
+
+        try {
+            accountEntity = accountRepository.save(accountEntity);
+            return new MessageDTO("Tạo tài khoản thành công!", true, "success");
+        } catch (Exception e) {
+            return new MessageDTO("Tạo tài khoản thất bại: " + e.getMessage(), false, "fail");
+        }
+    }
+
+
 }

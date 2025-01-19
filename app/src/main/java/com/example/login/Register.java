@@ -1,5 +1,6 @@
 package com.example.login;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -9,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.login.api.AccountAPI;
 import com.example.login.api.RetrofitClient;
+import com.example.login.constant.ActionConstant;
+import com.example.login.dto.AccountDTO;
 import com.example.login.dto.MessageDTO;
 
 import retrofit2.Call;
@@ -22,50 +25,36 @@ public class Register extends AppCompatActivity {
         setContentView(R.layout.register);
     }
 
-    private void register(String email) {
+    private void register (AccountDTO account) {
         AccountAPI api = RetrofitClient.getRetrofitInstance().create(AccountAPI.class);
-        Call<MessageDTO> call = api.register(email);
+        Call<MessageDTO> call = api.sendOtpForRegister(account.getUsername());
 
-        // Thực hiện gọi API
+
         call.enqueue(new Callback<MessageDTO>() {
             @Override
             public void onResponse(Call<MessageDTO> call, Response<MessageDTO> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    // Lấy dữ liệu phản hồi là một chuỗi
+                if (response.isSuccessful()) {
+
                     MessageDTO messageDTO = response.body();
-                    Toast.makeText(Register.this, messageDTO.getMessage() , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Register.this, messageDTO.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    // thành công
+                    if (messageDTO.isResult()) {
+                        // chuyển tới enter otp
+                        Intent intent = new Intent(Register.this, EnterOTP.class);
+                        intent.putExtra("account", account);
+                        intent.putExtra(ActionConstant.ACTION, ActionConstant.REGISTER);
+                        startActivity(intent);
+                    }
+
                 } else {
-                    Toast.makeText(Register.this, "Chưa thể tạo OTP", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Register.this, "Không thể gửi OTP. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<MessageDTO> call, Throwable t) {
-                Toast.makeText(Register.this, "Chưa thể tạo OTP", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void confirmOtp (String otp) {
-        AccountAPI api = RetrofitClient.getRetrofitInstance().create(AccountAPI.class);
-        Call<MessageDTO> call = api.confirmOTP(otp);
-
-        // Thực hiện gọi API
-        call.enqueue(new Callback<MessageDTO>() {
-            @Override
-            public void onResponse(Call<MessageDTO> call, Response<MessageDTO> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    // Lấy dữ liệu phản hồi là một chuỗi
-                    MessageDTO messageDTO = response.body();
-                    Toast.makeText(Register.this, messageDTO.getMessage() , Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(Register.this, "Chưa thể xác nhận OTP", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MessageDTO> call, Throwable t) {
-                Toast.makeText(Register.this, "Chưa thể xác nhận OTP", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Register.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -74,8 +63,12 @@ public class Register extends AppCompatActivity {
 
     public void btnRegisterClick(View view) {
         EditText etEmail = findViewById(R.id.etEmail);
+        EditText etPassword = findViewById(R.id.etPassword);
+        EditText etRePassword = findViewById(R.id.etRePassword);
 
         String email = etEmail.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+        String rePassword = etRePassword.getText().toString().trim();
 
         // Check input
         if (email.isEmpty()) {
@@ -83,21 +76,17 @@ public class Register extends AppCompatActivity {
             return;
         }
 
-        register(email);
-    }
-
-    public void btnConfirmOtpClick(View view) {
-
-        EditText etOtp = findViewById(R.id.etOtp);
-
-        String otp = etOtp.getText().toString().trim();
-
-        // Check input
-        if (otp.isEmpty()) {
-            etOtp.setError("Please enter your email.");
+        if (password.isEmpty()) {
+            etPassword.setError("Please enter your email.");
             return;
         }
 
-        confirmOtp(otp);
+        if (!password.equals(rePassword)) {
+            etRePassword.setError("Passwords do not match!");
+            return;
+        }
+
+        register (new AccountDTO(email,password));
     }
+
 }

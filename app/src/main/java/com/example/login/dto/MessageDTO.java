@@ -3,6 +3,16 @@ package com.example.login.dto;
 public class MessageDTO {
     private String message;
 
+    public boolean isResult() {
+        return result;
+    }
+
+    public void setResult(boolean result) {
+        this.result = result;
+    }
+
+    boolean result;
+
     public String getStatus() {
         return status;
     }

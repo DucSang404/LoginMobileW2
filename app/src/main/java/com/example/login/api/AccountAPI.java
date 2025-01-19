@@ -2,11 +2,15 @@ package com.example.login.api;
 
 import com.example.login.dto.AccountDTO;
 import com.example.login.dto.MessageDTO;
+import com.example.login.dto.request.RegisterDTO;
+
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -15,11 +19,14 @@ public interface AccountAPI {
     Call<AccountDTO> login(@Body AccountDTO accountDTO);
 
     @POST("/account/register")
-    Call<MessageDTO> register (@Body String email);
+    Call<MessageDTO> register(@Body RegisterDTO registerDTO);
 
+    @POST("/account/check-user")
+    Call<MessageDTO> checkUser(@Body String email);
 
-    @POST("/account/confirm-otp")
-    Call<MessageDTO> confirmOTP (@Body String code);
+    @FormUrlEncoded
+    @POST("/account/send-otp-for-register")
+    Call<MessageDTO> sendOtpForRegister(@Field("email") String email);
 
     @FormUrlEncoded
     @POST("/account/send-otp")

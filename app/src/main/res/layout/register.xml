@@ -33,11 +33,23 @@
         app:layout_constraintWidth_percent="0.8" />
 
     <EditText
-        android:id="@+id/etOtp"
+        android:id="@+id/etPassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="Code OTP"
+        android:layout_marginTop="20dp"
+        android:hint="Password"
+        android:inputType="textEmailAddress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etEmail"
+        app:layout_constraintWidth_percent="0.8" />
+
+    <EditText
+        android:id="@+id/etRePassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="92dp"
+        android:hint="RePassword"
         android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,22 +60,12 @@
         android:id="@+id/btnRegister"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="116dp"
         android:onClick="btnRegisterClick"
         android:text="Register"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etOtp"
-        app:layout_constraintWidth_percent="0.8" />
-
-    <Button
-        android:id="@+id/btnConfirmOtp"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:onClick="btnConfirmOtpClick"
-        android:text="Confirm OTP"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnRegister"
+        app:layout_constraintTop_toBottomOf="@id/etRePassword"
         app:layout_constraintWidth_percent="0.8" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

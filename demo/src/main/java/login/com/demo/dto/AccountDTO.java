@@ -12,4 +12,10 @@ public class AccountDTO {
     Long id;
     String username;
     String password;
+
+
+    public AccountDTO(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 }

@@ -5,6 +5,7 @@ import login.com.demo.constant.MailConfirmOTPConstant;
 import login.com.demo.constant.OTPConstant;
 import login.com.demo.dto.AccountDTO;
 import login.com.demo.dto.MessageDTO;
+import login.com.demo.dto.request.RegisterDTO;
 import login.com.demo.service.AccountService;
 import login.com.demo.utils.MailUtils;
 import login.com.demo.utils.OTP;
@@ -39,36 +40,53 @@ public class AccountController {
         return ResponseEntity.ok(accountDTO);
     }
 
+    @PostMapping("/check-user")
+    public ResponseEntity<MessageDTO> Register (@RequestBody String email) throws Exception {
 
-    @PostMapping(("/register"))
-    public ResponseEntity<MessageDTO> register (@RequestBody String email, HttpServletRequest request) throws Exception {
-        if (email.isEmpty())
-            return ResponseEntity.badRequest().body(null); // Trả về mã 400 nếu dữ liệu không hợp lệ
+        return (accountService.existsByUsername(email)) ? ResponseEntity.ok(new MessageDTO("no user",true,"success"))
+                : ResponseEntity.ok(new MessageDTO("already has users",false,"success"));
 
-        // đưa otp vào session
-        OTP codeOTP = new OTP();
-        request.getSession().setAttribute(OTPConstant.OTP, codeOTP);
-
-
-        MailUtils mailUtils = new MailUtils();
-        if (mailUtils.sendEmail("phama9162@gmail.com", email , MailConfirmOTPConstant.SUBJECT, MailConfirmOTPConstant.CONTENT + codeOTP.getOtp())) {
-            return ResponseEntity.ok(new MessageDTO(MailConfirmOTPConstant.REPONSE,"success"));
-        } else  throw new Exception("Chưa thể gửi OTP");
     }
 
 
-    @PostMapping(("/confirm-otp"))
-    public ResponseEntity<MessageDTO> ConfirmOTP (@RequestBody String code, HttpServletRequest request) throws Exception {
-        if (code.isEmpty() || code == null)
-            return ResponseEntity.badRequest().body(null); // Trả về mã 400 nếu dữ liệu không hợp lệ
+    @PostMapping(("/register"))
+    public ResponseEntity<MessageDTO> Register (@RequestBody RegisterDTO registerDTO, HttpServletRequest request) throws Exception {
 
-        // đưa otp vào session
-        OTP codeOTP = (OTP) request.getSession().getAttribute(OTPConstant.OTP);
+        AccountDTO accountDTO = new AccountDTO(registerDTO.getUsername(),registerDTO.getPassword());
+        String otp = registerDTO.getOtpCode();
 
-        if (code.equals(codeOTP.getOtp())) {
-            return ResponseEntity.ok(new MessageDTO("Tạo tài khoản thành công !",true, "success"));
-        } else
-            return ResponseEntity.ok(new MessageDTO("OTP không đúng!",false, "failure"));
+        if (otpStorage.containsKey(accountDTO.getUsername()) && otpStorage.get(accountDTO.getUsername()).equals(otp)) {
+            otpStorage.remove(accountDTO.getUsername());
+
+            //register
+            return ResponseEntity.ok(accountService.register(accountDTO));
+        }
+        else {
+            return ResponseEntity.ok(new MessageDTO("mã OTP không hợp lệ",false,"fail"));
+        }
+    }
+
+    private boolean sendOTP (OTP otp,String email) {
+        String subject = "Your OTP";
+        String body = "Hi,\n\nYour OTP is: " + otp.getOtp() + "\nPlease use this code to authenticate.";
+
+        return mailUtils.sendEmail("phama9162@gmail.com", email, subject, body);
+    }
+
+    @PostMapping("/send-otp-for-register")
+    public ResponseEntity<MessageDTO> sendOTPForRegister(@RequestParam String email, HttpServletRequest request) {
+        if (accountService.existsByUsername(email))
+            return ResponseEntity.ok(new MessageDTO("User đã tồn tại !",false,"success"));
+
+        OTP otp = new OTP();
+        otpStorage.put(email, otp.getOtp());
+
+        boolean isSent = sendOTP(otp,email);
+        if (isSent) {
+            return ResponseEntity.ok(new MessageDTO("OTP has send to " + email,true,"success"));
+        } else {
+            return ResponseEntity.ok(new MessageDTO("Could not send OTP. Pls try again",false,"fail"));
+        }
     }
 
     @PostMapping("/send-otp")
@@ -76,10 +94,7 @@ public class AccountController {
         OTP otp = new OTP();
         otpStorage.put(email, otp.getOtp());
 
-        String subject = "Your OTP";
-        String body = "Hi,\n\nYour OTP is: " + otp.getOtp() + "\nPlease use this code to authenticate.";
-
-        boolean isSent = mailUtils.sendEmail("phama9162@gmail.com", email, subject, body);
+        boolean isSent = sendOTP(otp,email);
         if (isSent) {
             return ResponseEntity.ok("OTP has send to " + email);
         } else {
