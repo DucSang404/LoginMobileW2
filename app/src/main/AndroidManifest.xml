@@ -31,6 +31,7 @@
         <activity android:name=".ForgetPassword" />
         <activity android:name=".LoginSuccess" />
         <activity android:name=".EnterOTP" />
+        <activity android:name=".ResetPass" />
 
     </application>
 

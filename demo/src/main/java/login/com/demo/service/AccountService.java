@@ -61,5 +61,14 @@ public class AccountService {
         }
     }
 
+    public boolean updatePassword(String email, String password) {
+        AccountEntity entity = accountRepository.findOneByUsername(email);
+
+        entity.setPassword(password);
+        entity = accountRepository.save(entity);
+
+        return true;
+    }
+
 
 }

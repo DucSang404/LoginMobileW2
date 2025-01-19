@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.login.api.AccountAPI;
+import com.example.login.constant.ActionConstant;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -54,6 +55,7 @@ public class ForgetPassword extends AppCompatActivity {
                     Toast.makeText(ForgetPassword.this, "OTP has sent to email", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(ForgetPassword.this, EnterOTP.class);
                     intent.putExtra("email", email);
+                    intent.putExtra(ActionConstant.ACTION, ActionConstant.FORGET_PASSWORD);
                     startActivity(intent);
                 } else {
                     Toast.makeText(ForgetPassword.this, "Không thể gửi OTP. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();

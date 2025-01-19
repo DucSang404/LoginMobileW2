@@ -8,4 +8,5 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 
     // Kiểm tra tồn tại bằng username
     boolean existsByUsername(String username);
+    AccountEntity findOneByUsername(String username);
 }

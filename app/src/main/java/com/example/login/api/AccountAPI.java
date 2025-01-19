@@ -34,4 +34,9 @@ public interface AccountAPI {
 
     @POST("/account/verify-otp")
     Call<Void> verifyOtp(@Query("email") String email, @Query("otp") String otp);
+
+    @FormUrlEncoded
+    @POST("/account/reset-pass")
+    Call<Void> resetPass(@Field("email") String email, @Field("password") String password);
+
 }

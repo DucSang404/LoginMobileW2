@@ -12,6 +12,7 @@ import login.com.demo.utils.OTP;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -111,6 +112,17 @@ public class AccountController {
         }
         else {
             return ResponseEntity.status(400).body("Invalid OTP or OTP expired");
+        }
+    }
+
+    @PostMapping("/reset-pass")
+    public ResponseEntity<String> resetPass(@RequestParam String email,
+                                            @RequestParam String password) {
+        boolean updated = accountService.updatePassword(email, password);
+        if (updated) {
+            return ResponseEntity.ok("Password updated successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update password");
         }
     }
 }

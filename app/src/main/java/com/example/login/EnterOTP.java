@@ -3,9 +3,7 @@ package com.example.login;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,12 +14,8 @@ import com.example.login.constant.ActionConstant;
 import com.example.login.dto.AccountDTO;
 import com.example.login.dto.MessageDTO;
 import com.example.login.dto.request.RegisterDTO;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,7 +45,9 @@ public class EnterOTP extends AppCompatActivity {
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(EnterOTP.this, "Xác thực OTP thành công", Toast.LENGTH_SHORT).show();
-                    // Bạn có thể chuyển sang màn hình khác nếu cần
+                    Intent intent = new Intent(EnterOTP.this, ResetPass.class);
+                    intent.putExtra("email", email);
+                    startActivity(intent);
                 } else {
                     Toast.makeText(EnterOTP.this, "OTP không hợp lệ hoặc đã hết hạn", Toast.LENGTH_SHORT).show();
                 }
@@ -72,16 +68,13 @@ public class EnterOTP extends AppCompatActivity {
                     new RegisterDTO(accountDTO.getUsername(),accountDTO.getPassword(),otp)
             );
 
-            // Thực hiện gọi API
             call.enqueue(new Callback<MessageDTO>() {
                 @Override
                 public void onResponse(Call<MessageDTO> call, Response<MessageDTO> response) {
                     if (response.isSuccessful() && response.body() != null) {
-                        // Lấy dữ liệu phản hồi là một chuỗi
                         MessageDTO messageDTO = response.body();
                         Toast.makeText(EnterOTP.this, messageDTO.getMessage(), Toast.LENGTH_SHORT).show();
 
-                        // thành công
                         if (messageDTO.isResult()) {
                             Intent intent = new Intent(EnterOTP.this, MainActivity.class);
                             startActivity(intent);
@@ -111,12 +104,17 @@ public class EnterOTP extends AppCompatActivity {
         if (otp.isEmpty()) {
             Toast.makeText(EnterOTP.this, "Vui lòng nhập OTP", Toast.LENGTH_SHORT).show();
         } else {
-            if (getIntent().getStringExtra(ActionConstant.ACTION).equals(ActionConstant.FORGET_PASSWORD))
+            String action = getIntent().getStringExtra(ActionConstant.ACTION);
+
+            if (ActionConstant.FORGET_PASSWORD.equals(action)) {
                 verifyOtp(email, otp);
-            else if (getIntent().getStringExtra(ActionConstant.ACTION).equals(ActionConstant.REGISTER)) {
+            } else if (ActionConstant.REGISTER.equals(action)) {
                 AccountDTO accountDTO = (AccountDTO) getIntent().getSerializableExtra("account");
-                register(otp,accountDTO);
+                register(otp, accountDTO);
+            } else {
+                Toast.makeText(EnterOTP.this, "Hành động không hợp lệ!", Toast.LENGTH_SHORT).show();
             }
+
         }
     }
 }
