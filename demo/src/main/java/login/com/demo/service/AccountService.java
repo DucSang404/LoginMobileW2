@@ -46,18 +46,18 @@ public class AccountService {
         AccountEntity accountEntity = accountConverter.toEntity(accountDTO);
 
         if (accountEntity == null) {
-            return new MessageDTO("Dữ liệu tài khoản không hợp lệ!", false, "fail");
+            return new MessageDTO("Invalid account data!", false, "fail");
         }
 
         if (accountRepository.existsByUsername(accountDTO.getUsername())) {
-            return new MessageDTO("Email đã tồn tại!", false, "fail");
+            return new MessageDTO("Email already exists! ", false, "fail");
         }
 
         try {
             accountEntity = accountRepository.save(accountEntity);
-            return new MessageDTO("Tạo tài khoản thành công!", true, "success");
+            return new MessageDTO("Account created successfully! ", true, "success");
         } catch (Exception e) {
-            return new MessageDTO("Tạo tài khoản thất bại: " + e.getMessage(), false, "fail");
+            return new MessageDTO("Account creation failed: " + e.getMessage(), false, "fail");
         }
     }
 

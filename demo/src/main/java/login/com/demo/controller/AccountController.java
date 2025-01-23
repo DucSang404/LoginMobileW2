@@ -63,7 +63,7 @@ public class AccountController {
             return ResponseEntity.ok(accountService.register(accountDTO));
         }
         else {
-            return ResponseEntity.ok(new MessageDTO("mã OTP không hợp lệ",false,"fail"));
+            return ResponseEntity.ok(new MessageDTO("Invalid OTP code ",false,"fail"));
         }
     }
 
@@ -77,7 +77,7 @@ public class AccountController {
     @PostMapping("/send-otp-for-register")
     public ResponseEntity<MessageDTO> sendOTPForRegister(@RequestParam String email, HttpServletRequest request) {
         if (accountService.existsByUsername(email))
-            return ResponseEntity.ok(new MessageDTO("User đã tồn tại !",false,"success"));
+            return ResponseEntity.ok(new MessageDTO("User already exists! ",false,"success"));
 
         OTP otp = new OTP();
         otpStorage.put(email, otp.getOtp());

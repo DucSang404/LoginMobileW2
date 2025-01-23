@@ -29,7 +29,7 @@ public class ForgetPassword extends AppCompatActivity {
             String email = editText.getText().toString().trim();
 
             if (email.isEmpty()) {
-                Toast.makeText(ForgetPassword.this, "Vui lòng nhập email", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ForgetPassword.this, "Please enter email", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -58,13 +58,13 @@ public class ForgetPassword extends AppCompatActivity {
                     intent.putExtra(ActionConstant.ACTION, ActionConstant.FORGET_PASSWORD);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(ForgetPassword.this, "Không thể gửi OTP. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ForgetPassword.this, "Unable to send OTP. Please try again.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(ForgetPassword.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ForgetPassword.this, "Connection error:" + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

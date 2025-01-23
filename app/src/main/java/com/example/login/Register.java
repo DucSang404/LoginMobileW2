@@ -48,13 +48,13 @@ public class Register extends AppCompatActivity {
                     }
 
                 } else {
-                    Toast.makeText(Register.this, "Không thể gửi OTP. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Register.this, "Unable to send OTP. Please try again.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<MessageDTO> call, Throwable t) {
-                Toast.makeText(Register.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Register.this, "Connection error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

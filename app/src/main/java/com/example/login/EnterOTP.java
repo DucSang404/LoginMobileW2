@@ -44,18 +44,18 @@ public class EnterOTP extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    Toast.makeText(EnterOTP.this, "Xác thực OTP thành công", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EnterOTP.this, "OTP authentication successful", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(EnterOTP.this, ResetPass.class);
                     intent.putExtra("email", email);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(EnterOTP.this, "OTP không hợp lệ hoặc đã hết hạn", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EnterOTP.this, "OTP is invalid or expired", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(EnterOTP.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(EnterOTP.this, "Connection error:" + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -81,13 +81,13 @@ public class EnterOTP extends AppCompatActivity {
                         }
 
                     } else {
-                        Toast.makeText(EnterOTP.this, "Lỗi hệ thống ", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(EnterOTP.this, "System error", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<MessageDTO> call, Throwable t) {
-                    Toast.makeText(EnterOTP.this, "Lỗi hệ thống ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EnterOTP.this, "System error ", Toast.LENGTH_SHORT).show();
                 }
             });
         } catch (Exception e) {
@@ -102,7 +102,7 @@ public class EnterOTP extends AppCompatActivity {
 
         String otp = editText.getText().toString().trim();
         if (otp.isEmpty()) {
-            Toast.makeText(EnterOTP.this, "Vui lòng nhập OTP", Toast.LENGTH_SHORT).show();
+            Toast.makeText(EnterOTP.this, "Please enter OTP", Toast.LENGTH_SHORT).show();
         } else {
             String action = getIntent().getStringExtra(ActionConstant.ACTION);
 
@@ -112,7 +112,7 @@ public class EnterOTP extends AppCompatActivity {
                 AccountDTO accountDTO = (AccountDTO) getIntent().getSerializableExtra("account");
                 register(otp, accountDTO);
             } else {
-                Toast.makeText(EnterOTP.this, "Hành động không hợp lệ!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EnterOTP.this, "Invalid action!", Toast.LENGTH_SHORT).show();
             }
 
         }

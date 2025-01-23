@@ -60,13 +60,13 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
 //                    Toast.makeText(MainActivity.this, "Đăng nhập thành công với username: " + loggedInAccount.getUsername(), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(MainActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<AccountDTO> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Lỗi đăng nhập: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Login error:" + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
