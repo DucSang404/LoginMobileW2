@@ -98,7 +98,8 @@ Công nghệ sử dụng:
 
   - Gửi OTP đến email, sau đó xác thực để kích hoạt tài khoản.
   - ![image](https://github.com/user-attachments/assets/aa30f201-2103-4bf4-a89e-3b4f554d73db)
-  - ![image](https://github.com/user-attachments/assets/b6ad47dc-801c-4541-b24e-35320b2b2838)
+  - ![image](https://github.com/user-attachments/assets/d1922b8e-e88a-4b78-a97d-7edd22e6f719)
+
 
 
 - **Đăng nhập**:
@@ -112,7 +113,7 @@ Công nghệ sử dụng:
   - Nhập email, nhận OTP qua email, sau đó đặt lại mật khẩu mới.
   - ![image](https://github.com/user-attachments/assets/c10d35ee-5731-466b-8a92-25b81a1ba1d2)
   - ![image](https://github.com/user-attachments/assets/7bc1e8e6-6ab5-4181-a1d7-77b937ee4577)
-  - ![image](https://github.com/user-attachments/assets/f33df16c-4914-4e5f-8b94-a1b6cd45ff27)
+  - ![image](https://github.com/user-attachments/assets/e0000ffb-fd0e-49b0-a771-dae938331cda)
   - ![image](https://github.com/user-attachments/assets/f235e90c-9bdf-46ff-a2f5-c1c215dc8aa9)
 
 
